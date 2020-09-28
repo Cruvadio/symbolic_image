@@ -11,6 +11,14 @@ using System.Windows.Forms;
 
 namespace Symbol
 {
+
+
+    public enum Actions
+    {
+        BuildGraph = 0,
+        TopologySort,
+    }
+
     public partial class Form1 : Form
     {
         public Form1()
@@ -75,20 +83,48 @@ namespace Symbol
 
             var cast = Int32.Parse(textBoxCast.Text);
 
+            var showOutput = chkBoxShowOutput.Checked;
+
+
+            Actions selectedAction = Actions.BuildGraph;
+
             Symbol symbol = new Symbol(xMin, xMax, yMin, yMax, cast, delta, a, b);
             symbol.xFunction = xFunc;
             symbol.yFunction = yFunc;
 
-            DateTime time = DateTime.Now;
-
-            symbol.MakeGraph();
-
-            var endTime = DateTime.Now - time;
 
 
-            lblTime.Text = "Program worked " + endTime.TotalMilliseconds.ToString() + " miliseconds.";
+            if (cmbBoxActions.SelectedItem.Equals(cmbBoxActions.Items[0]))
+            {
+                selectedAction = Actions.BuildGraph;
+            }
+            else if (cmbBoxActions.SelectedItem.Equals(cmbBoxActions.Items[1]))
+            {
+                selectedAction = Actions.TopologySort;
+            }
 
 
+            if (!showOutput)
+            {
+                DateTime time = DateTime.Now;
+
+                symbol.MakeGraph();
+
+                if (selectedAction == Actions.TopologySort)
+                    symbol.TopologySort();
+
+                var endTime = DateTime.Now - time;
+
+                lblTime.Text = "Program worked " + endTime.TotalMilliseconds.ToString() + " miliseconds.";
+            }
+            else
+            {
+                OutputForm form = new OutputForm(symbol, selectedAction);
+                form.Show();
+            }
+
+
+            
             WriteToCache();
 
         }
@@ -124,6 +160,8 @@ namespace Symbol
             const string info = @"  Программа предназначена для построения символического образа. Для начала работы необходимо ввести данные:
     Отображение f(x,y) - формула для отображения x и y. Также необходимо ввести область, в которой нужно получить символический образ.
     Затем параметры a и b, если необходимо, и интервал, который определит точность и количество клеток, а также количество точек, выпускаемых из каждой клетки.
+    Также существует возможсть вывода для каждого действия. 
+    ПРЕДУПРЕЖДЕНИЕ! Не рекомендуется ставить галочку на выводе при очень маленьком значении интервала, т.к. это может занять значительное время.
         Ввод формул:
       +  - сложение
       -  - вычитание

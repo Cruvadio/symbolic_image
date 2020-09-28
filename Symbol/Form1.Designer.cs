@@ -55,6 +55,7 @@
             this.textBoxCast = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
             this.lblTime = new System.Windows.Forms.Label();
+            this.chkBoxShowOutput = new System.Windows.Forms.CheckBox();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -112,7 +113,7 @@
             // 
             // btnSubmit
             // 
-            this.btnSubmit.Location = new System.Drawing.Point(130, 176);
+            this.btnSubmit.Location = new System.Drawing.Point(130, 185);
             this.btnSubmit.Name = "btnSubmit";
             this.btnSubmit.Size = new System.Drawing.Size(307, 23);
             this.btnSubmit.TabIndex = 6;
@@ -282,11 +283,22 @@
             this.lblTime.Size = new System.Drawing.Size(0, 13);
             this.lblTime.TabIndex = 24;
             // 
+            // chkBoxShowOutput
+            // 
+            this.chkBoxShowOutput.AutoSize = true;
+            this.chkBoxShowOutput.Location = new System.Drawing.Point(461, 189);
+            this.chkBoxShowOutput.Name = "chkBoxShowOutput";
+            this.chkBoxShowOutput.Size = new System.Drawing.Size(110, 17);
+            this.chkBoxShowOutput.TabIndex = 25;
+            this.chkBoxShowOutput.Text = "Показать вывод";
+            this.chkBoxShowOutput.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(590, 232);
+            this.Controls.Add(this.chkBoxShowOutput);
             this.Controls.Add(this.lblTime);
             this.Controls.Add(this.label11);
             this.Controls.Add(this.textBoxCast);
@@ -313,8 +325,9 @@
             this.Controls.Add(this.txtFormXFormula);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
+            this.MaximizeBox = false;
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Символический образ";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -351,6 +364,7 @@
         private System.Windows.Forms.TextBox textBoxCast;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label lblTime;
+        private System.Windows.Forms.CheckBox chkBoxShowOutput;
     }
 }
 

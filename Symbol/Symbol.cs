@@ -108,6 +108,7 @@ namespace Symbol
 					int cell = ReturnCell(x, y);
 
 					if (cell == -1) continue;
+					if (cell >= _numberOfCells) continue;
 
 					if (!_graph[i].Contains(cell))
 					{
@@ -118,7 +119,69 @@ namespace Symbol
 
         }
 
+		public List<int> TopologySort()
+        {
+			bool[] used = new bool[_numberOfCells];
+			List<int> ans = new List<int>(_numberOfCells);
 
+
+			Action<int> depthFirstSearch = null;
+
+			depthFirstSearch = start =>
+			{
+
+				Stack<int> stack = new Stack<int>();
+
+				stack.Push(start);
+
+				while (stack.Count != 0)
+                {
+					int v = stack.Pop();
+					for (int i = 0; i < Graph[v].Count; ++i)
+                    {
+						int g = Graph[v][i];
+						if (!used[g])
+                        {
+							stack.Push(Graph[v][i]);
+							used[Graph[v][i]] = true;
+                        }
+                    }
+					ans.Add(v);
+                }
+
+				//used[v] = true;
+				//for (int i = 0; i < Graph[v].Count; ++i)
+				//{ 
+				//	int to = Graph[v][i];
+				//	if (!used[to])
+				//		depthFirstSearch(to);
+				//}
+				//ans.Add(v);
+			};
+
+
+			Action topologicalSort = null;
+			topologicalSort = () =>
+			{
+				Parallel.For(0, _numberOfCells, (i, state) => { used[i] = false; });
+					
+
+				ans.Clear();
+
+				Parallel.For(0, _numberOfCells, (i, state) =>
+				{
+					if (!used[i])
+						depthFirstSearch(i);
+				});
+					
+				ans.Reverse();
+			};
+
+
+			topologicalSort();
+
+			return ans;
+		}
 
 	}
 }

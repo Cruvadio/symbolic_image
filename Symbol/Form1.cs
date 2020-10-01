@@ -17,6 +17,7 @@ namespace Symbol
     {
         BuildGraph = 0,
         TopologySort,
+        FindComponents,
     }
 
     public partial class Form1 : Form
@@ -94,15 +95,7 @@ namespace Symbol
 
 
 
-            if (cmbBoxActions.SelectedItem.Equals(cmbBoxActions.Items[0]))
-            {
-                selectedAction = Actions.BuildGraph;
-            }
-            else if (cmbBoxActions.SelectedItem.Equals(cmbBoxActions.Items[1]))
-            {
-                selectedAction = Actions.TopologySort;
-            }
-
+            selectedAction = (Actions)cmbBoxActions.SelectedIndex;
 
             if (!showOutput)
             {
@@ -112,6 +105,8 @@ namespace Symbol
 
                 if (selectedAction == Actions.TopologySort)
                     symbol.TopologySort();
+                if (selectedAction == Actions.FindComponents)
+                    symbol.FindStrongConnectedComponents();
 
                 var endTime = DateTime.Now - time;
 
@@ -119,8 +114,17 @@ namespace Symbol
             }
             else
             {
-                OutputForm form = new OutputForm(symbol, selectedAction);
-                form.Show();
+                if (selectedAction == Actions.FindComponents)
+                {
+                    Form2 form = new Form2(symbol);
+                    form.Show();
+                }
+                else
+                {
+                    OutputForm form = new OutputForm(symbol, selectedAction);
+                    form.Show();
+                }
+
             }
 
 

@@ -105,7 +105,8 @@
             this.cmbBoxActions.FormattingEnabled = true;
             this.cmbBoxActions.Items.AddRange(new object[] {
             "Построить символический образ",
-            "Выполнить топологическую сортировку"});
+            "Выполнить топологическую сортировку",
+            "Найти компоненты сильной связности"});
             this.cmbBoxActions.Location = new System.Drawing.Point(264, 37);
             this.cmbBoxActions.Name = "cmbBoxActions";
             this.cmbBoxActions.Size = new System.Drawing.Size(307, 21);

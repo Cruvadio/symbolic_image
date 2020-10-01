@@ -72,18 +72,27 @@ namespace Symbol
 			_graph = new List<int>[_numberOfCells];
 		}
 
+		double JuliaX(double xn, double yn)
+        {
+			return xn * xn - yn * yn + _a;
+        }
 
+		double JuliaY(double xn, double yn)
+		{
+			return 2 * xn * yn + _b;
+		}
 
 		private int ReturnCell(double x, double y)
         {
 
 			double xn = xFunction(x, y, _a, _b);
-			double yn = xFunction(x, y, _a, _b);
+			double yn = yFunction(x, y, _a, _b);
+
 
 			if (xn <= _xMin || xn >= _xMax || yn <= _yMin || yn >= _yMax)
 				return -1;
 
-			return (int)Math.Abs((double)((yn - _yMax) / _delta) * _cols + (double)(xn - _xMin) / _delta);
+			return (int)Math.Abs(((double)(yn - _yMax)/_delta)) * _cols + (int)Math.Abs( ((double)(xn - _xMin)/_delta));
         }
 
 
@@ -92,7 +101,7 @@ namespace Symbol
 			if (xFunction == null || yFunction == null)
 				return;
 
-			Parallel.For(0, _numberOfCells, (i, state) =>
+			for(int i = 0; i< _numberOfCells; i++)
 			{
 				int row = i / _cols;
 				int col = i % _cols;
@@ -115,14 +124,35 @@ namespace Symbol
 						_graph[i].Add(cell);
 					}
 				}
+			};
+
+        }
+
+
+		private List<int>[] TransposeGraph()
+        {
+			List<int>[] tGraph = new List<int>[_numberOfCells];
+			Parallel.For(0, _numberOfCells, (i, state) =>
+			{
+				tGraph[i] = new List<int>();
 			});
 
+			for (int i = 0; i < _numberOfCells; ++i)
+			{
+				for(int j = 0; j < Graph[i].Count; ++j)
+				{
+					int g = Graph[i][j];
+					tGraph[g].Add(i);
+				};
+			};
+
+			return tGraph;
         }
 
 		public List<int> TopologySort()
         {
 			bool[] used = new bool[_numberOfCells];
-			List<int> ans = new List<int>(_numberOfCells);
+			List<int> order = new List<int>(_numberOfCells);
 
 
 			Action<int> depthFirstSearch = null;
@@ -137,6 +167,7 @@ namespace Symbol
 				while (stack.Count != 0)
                 {
 					int v = stack.Pop();
+					used[v] = true;
 					for (int i = 0; i < Graph[v].Count; ++i)
                     {
 						int g = Graph[v][i];
@@ -146,7 +177,8 @@ namespace Symbol
 							used[Graph[v][i]] = true;
                         }
                     }
-					ans.Add(v);
+					order.Add(v);
+					
                 }
 
 				//used[v] = true;
@@ -166,22 +198,89 @@ namespace Symbol
 				Parallel.For(0, _numberOfCells, (i, state) => { used[i] = false; });
 					
 
-				ans.Clear();
+				order.Clear();
 
-				Parallel.For(0, _numberOfCells, (i, state) =>
+				for(int i = 0; i < _numberOfCells; ++i)
 				{
 					if (!used[i])
 						depthFirstSearch(i);
-				});
+				};
 					
-				ans.Reverse();
+				order.Reverse();
 			};
 
 
 			topologicalSort();
 
-			return ans;
+			return order;
 		}
+
+
+		public List<List<int>> FindStrongConnectedComponents ()
+        {
+			List<int> order = TopologySort();
+			bool[] used = new bool[_numberOfCells];
+
+			List<int>[] tGraph = TransposeGraph();
+			List<List<int>> components = new List<List<int>>();
+
+			Func<int, List<int>> depthFirstSearch = null;
+
+			depthFirstSearch = start =>
+			{
+				List<int> component = new List<int>();
+				Stack<int> stack = new Stack<int>();
+
+				stack.Push(start);
+
+				while (stack.Count != 0)
+				{
+					int v = stack.Pop();
+					used[v] = true;
+					component.Add(v);
+					for (int i = 0; i < tGraph[v].Count; ++i)
+					{
+						int g = tGraph[v][i];
+						if (!used[g])
+						{
+							stack.Push(g);
+							used[g] = true;
+						}
+					}
+
+				}
+
+				return component;
+			};
+			Parallel.For(0, _numberOfCells, (i, state) => { used[i] = false; });
+
+			for (int i = 0; i < _numberOfCells; ++i)
+            {
+				int v = order[i];
+				if (!used[v])
+                {
+					List<int> component = depthFirstSearch(v);
+
+					if (component.Count > 1)
+                    {
+						components.Add(component);
+                    }
+                }
+            }
+
+			return components;
+        }
+
+
+		public int ReturnCol(int cell)
+        {
+			return cell % _cols;
+        }
+
+		public int ReturnRow (int cell)
+        {
+			return cell / _cols;
+        }
 
 	}
 }

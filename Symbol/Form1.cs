@@ -43,6 +43,9 @@ namespace Symbol
 
                     txtFormDeltaValue.Text = ReadLineFromCache(sr);
                     textBoxCast.Text = ReadLineFromCache(sr);
+
+                    textBoxWidth.Text = ReadLineFromCache(sr);
+                    textBoxHeight.Text = ReadLineFromCache(sr);
                 }
             }
             catch (Exception e)
@@ -77,6 +80,9 @@ namespace Symbol
             var yMax = Double.Parse(txtFormYMax.Text);
             var yMin = Double.Parse(txtFormYMin.Text);
 
+            var width = textBoxWidth.Text != null ? Int32.Parse(textBoxWidth.Text) : 0;
+            var height = textBoxHeight.Text != null ? Int32.Parse(textBoxHeight.Text) : 0;
+
             var a = Double.Parse(txtFormAValue.Text);
             var b = Double.Parse(txtFormBValue.Text);
 
@@ -89,7 +95,7 @@ namespace Symbol
 
             Actions selectedAction = Actions.BuildGraph;
 
-            Symbol symbol = new Symbol(xMin, xMax, yMin, yMax, cast, delta, a, b);
+            Symbol symbol = new Symbol(xMin, xMax, yMin, yMax, cast, delta, a, b, width, height);
             symbol.xFunction = xFunc;
             symbol.yFunction = yFunc;
 
@@ -116,7 +122,7 @@ namespace Symbol
             {
                 if (selectedAction == Actions.FindComponents)
                 {
-                    Form2 form = new Form2(symbol);
+                    Form2 form = new Form2(symbol, width, height);
                     form.Show();
                 }
                 else
@@ -148,6 +154,8 @@ namespace Symbol
                 WriteCache(sw, txtFormBValue.Text);
                 WriteCache(sw, txtFormDeltaValue.Text);
                 WriteCache(sw, textBoxCast.Text);
+                WriteCache(sw, textBoxWidth.Text);
+                WriteCache(sw, textBoxHeight.Text);
             }
         }
 

@@ -56,6 +56,10 @@
             this.label11 = new System.Windows.Forms.Label();
             this.lblTime = new System.Windows.Forms.Label();
             this.chkBoxShowOutput = new System.Windows.Forms.CheckBox();
+            this.textBoxWidth = new System.Windows.Forms.TextBox();
+            this.textBoxHeight = new System.Windows.Forms.TextBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -294,11 +298,47 @@
             this.chkBoxShowOutput.Text = "Показать вывод";
             this.chkBoxShowOutput.UseVisualStyleBackColor = true;
             // 
+            // textBoxWidth
+            // 
+            this.textBoxWidth.Location = new System.Drawing.Point(264, 159);
+            this.textBoxWidth.Name = "textBoxWidth";
+            this.textBoxWidth.Size = new System.Drawing.Size(33, 20);
+            this.textBoxWidth.TabIndex = 26;
+            // 
+            // textBoxHeight
+            // 
+            this.textBoxHeight.Location = new System.Drawing.Point(376, 159);
+            this.textBoxHeight.Name = "textBoxHeight";
+            this.textBoxHeight.Size = new System.Drawing.Size(33, 20);
+            this.textBoxHeight.TabIndex = 27;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(209, 162);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(49, 13);
+            this.label12.TabIndex = 28;
+            this.label12.Text = "Ширина:";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(324, 162);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(48, 13);
+            this.label13.TabIndex = 29;
+            this.label13.Text = "Высота:";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(590, 232);
+            this.Controls.Add(this.label13);
+            this.Controls.Add(this.label12);
+            this.Controls.Add(this.textBoxHeight);
+            this.Controls.Add(this.textBoxWidth);
             this.Controls.Add(this.chkBoxShowOutput);
             this.Controls.Add(this.lblTime);
             this.Controls.Add(this.label11);
@@ -366,6 +406,10 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label lblTime;
         private System.Windows.Forms.CheckBox chkBoxShowOutput;
+        private System.Windows.Forms.TextBox textBoxWidth;
+        private System.Windows.Forms.TextBox textBoxHeight;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label13;
     }
 }
 

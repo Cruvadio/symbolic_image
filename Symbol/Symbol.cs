@@ -22,6 +22,8 @@ namespace Symbol
 		private double _yMin;
 		private double _yMax;
 
+
+
 		private int _cast;
 
 		private double _a;
@@ -38,6 +40,14 @@ namespace Symbol
 			get
             {
 				return _graph;
+            }
+        }
+
+		public int Scale
+        {
+            get
+            {
+				return _width / _cols;
             }
         }
 
@@ -72,16 +82,6 @@ namespace Symbol
 			_graph = new List<int>[_numberOfCells];
 		}
 
-		double JuliaX(double xn, double yn)
-        {
-			return xn * xn - yn * yn + _a;
-        }
-
-		double JuliaY(double xn, double yn)
-		{
-			return 2 * xn * yn + _b;
-		}
-
 		private int ReturnCell(double x, double y)
         {
 
@@ -101,7 +101,7 @@ namespace Symbol
 			if (xFunction == null || yFunction == null)
 				return;
 
-			for(int i = 0; i< _numberOfCells; i++)
+			Parallel.For(0, _numberOfCells, (i, state) =>
 			{
 				int row = i / _cols;
 				int col = i % _cols;
@@ -124,7 +124,7 @@ namespace Symbol
 						_graph[i].Add(cell);
 					}
 				}
-			};
+			});
 
         }
 

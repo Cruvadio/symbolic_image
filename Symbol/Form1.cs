@@ -18,6 +18,7 @@ namespace Symbol
         BuildGraph = 0,
         TopologySort,
         FindComponents,
+        SetLocalization,
     }
 
     public partial class Form1 : Form
@@ -46,6 +47,8 @@ namespace Symbol
 
                     textBoxWidth.Text = ReadLineFromCache(sr);
                     textBoxHeight.Text = ReadLineFromCache(sr);
+
+                    textBoxIterationNumber.Text = ReadLineFromCache(sr);
                 }
             }
             catch (Exception e)
@@ -92,6 +95,8 @@ namespace Symbol
 
             var showOutput = chkBoxShowOutput.Checked;
 
+            var n = Int32.Parse(textBoxIterationNumber.Text);
+
 
             Actions selectedAction = Actions.BuildGraph;
 
@@ -113,6 +118,8 @@ namespace Symbol
                     symbol.TopologySort();
                 if (selectedAction == Actions.FindComponents)
                     symbol.FindStrongConnectedComponents();
+                if (selectedAction == Actions.SetLocalization)
+                    symbol.MakeNewGraph(n, symbol.FindStrongConnectedComponents());
 
                 var endTime = DateTime.Now - time;
 
@@ -120,9 +127,9 @@ namespace Symbol
             }
             else
             {
-                if (selectedAction == Actions.FindComponents)
+                if (selectedAction == Actions.SetLocalization)
                 {
-                    Form2 form = new Form2(symbol, width, height);
+                    Form2 form = new Form2(symbol, width, height, n);
                     form.Show();
                 }
                 else

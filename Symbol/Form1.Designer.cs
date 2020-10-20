@@ -60,6 +60,8 @@
             this.textBoxHeight = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
+            this.textBoxIterationNumber = new System.Windows.Forms.TextBox();
+            this.label14 = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -110,7 +112,8 @@
             this.cmbBoxActions.Items.AddRange(new object[] {
             "Построить символический образ",
             "Выполнить топологическую сортировку",
-            "Найти компоненты сильной связности"});
+            "Найти компоненты сильной связности",
+            "Локализация цепно-реккурентного множества"});
             this.cmbBoxActions.Location = new System.Drawing.Point(264, 37);
             this.cmbBoxActions.Name = "cmbBoxActions";
             this.cmbBoxActions.Size = new System.Drawing.Size(307, 21);
@@ -330,11 +333,29 @@
             this.label13.TabIndex = 29;
             this.label13.Text = "Высота:";
             // 
+            // textBoxIterationNumber
+            // 
+            this.textBoxIterationNumber.Location = new System.Drawing.Point(155, 159);
+            this.textBoxIterationNumber.Name = "textBoxIterationNumber";
+            this.textBoxIterationNumber.Size = new System.Drawing.Size(33, 20);
+            this.textBoxIterationNumber.TabIndex = 30;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(30, 162);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(119, 13);
+            this.label14.TabIndex = 31;
+            this.label14.Text = "Количество итераций:";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(590, 232);
+            this.Controls.Add(this.label14);
+            this.Controls.Add(this.textBoxIterationNumber);
             this.Controls.Add(this.label13);
             this.Controls.Add(this.label12);
             this.Controls.Add(this.textBoxHeight);
@@ -410,6 +431,8 @@
         private System.Windows.Forms.TextBox textBoxHeight;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.TextBox textBoxIterationNumber;
+        private System.Windows.Forms.Label label14;
     }
 }
 

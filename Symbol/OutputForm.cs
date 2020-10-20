@@ -63,9 +63,10 @@ namespace Symbol
 
             textBoxOutput.Text = "Построение символического образа прошло успешно. Формат представления: номер веришины: образы этой вершины через запятую.\r\n";
 
-            for (int i = 0; i < _symbol.Graph.Length; ++i)
+            for (int i = 0; i < _symbol.Graph.Capacity; ++i)
             {
                 textBoxOutput.Text += i.ToString() + ": ";
+                if (_symbol.Graph[i] != null)
                 for (int j = 0; j < _symbol.Graph[i].Count; ++j)
                 {
                     textBoxOutput.Text += _symbol.Graph[i][j].ToString() + ", ";

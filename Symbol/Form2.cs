@@ -100,7 +100,7 @@ namespace Symbol
             Random random = new Random();
             for (int i = 0; i < strongComponents.Count; i++)
             {
-                if (strongComponents[i].Count > 10)
+                if (strongComponents[i].Count > 1)
                 {
                     //SolidBrush brush = new SolidBrush(Color.FromArgb(random.Next(255), random.Next(255), random.Next(255)));
 

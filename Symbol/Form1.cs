@@ -95,7 +95,7 @@ namespace Symbol
 
             var showOutput = chkBoxShowOutput.Checked;
 
-            var n = Int32.Parse(textBoxIterationNumber.Text);
+            
 
 
             Actions selectedAction = Actions.BuildGraph;
@@ -119,7 +119,10 @@ namespace Symbol
                 if (selectedAction == Actions.FindComponents)
                     symbol.FindStrongConnectedComponents();
                 if (selectedAction == Actions.SetLocalization)
+                {
+                    var n = Int32.Parse(textBoxIterationNumber.Text);
                     symbol.MakeNewGraph(n, symbol.FindStrongConnectedComponents());
+                }
 
                 var endTime = DateTime.Now - time;
 
@@ -129,6 +132,7 @@ namespace Symbol
             {
                 if (selectedAction == Actions.SetLocalization)
                 {
+                    var n = Int32.Parse(textBoxIterationNumber.Text);
                     Form2 form = new Form2(symbol, width, height, n);
                     form.Show();
                 }

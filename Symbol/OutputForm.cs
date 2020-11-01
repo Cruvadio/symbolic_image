@@ -82,16 +82,24 @@ namespace Symbol
 
             progressBar1.Value += 50;
 
-            List<int> ans = _symbol.TopologySort();
+            List<List<int>> components = _symbol.FindStrongConnectedComponents(true);
 
             progressBar1.Value += 50;
 
             textBoxOutput.Text = "Топологическая сортировка прошла успешно. Вершины показаны в порядке возрастания времени выхода из вершины \r\n";
-            textBoxOutput.Text += "Количество вершин: " + ans.Count.ToString() + "\r\n";
+            textBoxOutput.Text += "Количество вершин и компонент: " + components.Count.ToString() + "\r\n";
 
-            for (int i = 0; i < ans.Count; ++i)
+            int n = 1;
+            for (int i = 0; i < components.Count; ++i)
             {
-                textBoxOutput.Text += ans[i].ToString() + "\r\n";
+                if (components[i].Count == 1) textBoxOutput.Text += components[i][0].ToString() + "\r\n";
+                else
+                {
+                    textBoxOutput.Text += "Компонента № " + n++ + ": ";
+                    foreach (var c in components[i])
+                        textBoxOutput.Text += c.ToString() + ", ";
+                    textBoxOutput.Text += "\r\n";
+                }
             }
         }
 

@@ -26,6 +26,8 @@ namespace Symbol
 		private double _yMax;
 
 
+		private int _cast_square;
+
 
 		private int _cast;
 
@@ -100,6 +102,9 @@ namespace Symbol
 
 			_numberOfCells = _rows * _cols;
 			_graph = new SymbolGraph(_numberOfCells);
+
+
+			_cast_square = (int)Math.Ceiling(Math.Sqrt((double)_cast));
 		}
 
 		private int ReturnCell(double x, double y)
@@ -172,24 +177,25 @@ namespace Symbol
 				//mut[i] = new Mutex();
 				edge.Verticies.Add(null);
 
-				for (int k = 1; k <= _cast; k++)
+				for (int k = 0; k <= _cast_square - 1; k++)
 				{
-					double x = x1 + (double)k * _delta / (double)_cast;
-					double y = y1 - (double)k * _delta / (double)_cast;
-
-					int cell = ReturnCell(x, y);
-
-					if (cell == -1) continue;
-					if (cell >= _numberOfCells) continue;
-
-
-					if (edge.Verticies.Count !=0 && edge.Verticies[edge.Verticies.Count - 1] == null)
-						edge.Verticies[edge.Verticies.Count - 1] = new List<int>();
-
-
-					if (!edge.Verticies[edge.Verticies.Count - 1].Contains(cell))
+					for (int t = 0; t <= _cast_square - 1; t++)
 					{
-						edge.Verticies[edge.Verticies.Count - 1].Add(cell);
+						double x = x1 + (double)k * _delta / (double)_cast_square;
+						double y = y1 - (double)t * _delta / (double)_cast_square;
+
+						int cell = ReturnCell(x, y);
+
+						if (cell == -1) continue;
+						if (cell >= _numberOfCells) continue;
+
+
+						if (edge.Verticies.Count != 0 && edge.Verticies[edge.Verticies.Count - 1] == null)
+							edge.Verticies[edge.Verticies.Count - 1] = new List<int>();
+						if (!edge.Verticies[edge.Verticies.Count - 1].Contains(cell))
+						{
+							edge.Verticies[edge.Verticies.Count - 1].Add(cell);
+						}
 					}
 				}
 				return edge;
@@ -211,22 +217,36 @@ namespace Symbol
         {
 			SymbolGraph tGraph = new SymbolGraph(_numberOfCells);
 
-			for (int i = 0; i < _numberOfCells; ++i)
-			{
-				if (Graph[i] != null)
-				for(int j = 0; j < Graph[i].Count; ++j)
-				{
+			//for (int i = 0; i < _numberOfCells; ++i)
+			//{
+			//	if (Graph[i] != null)
+			//	for(int j = 0; j < Graph[i].Count; ++j)
+			//	{
 
-					int g = Graph[i][j];
+			//		int g = Graph[i][j];
 
-					if (!tGraph.Contains(g))
-					{
-							tGraph[g] = new List<int>();
+			//		if (!tGraph.Contains(g))
+			//		{
+			//				tGraph[g] = new List<int>();
+			//		}
+
+			//		tGraph[g].Add(i);
+			//	};
+			//};
+
+
+			foreach(KeyValuePair<int, List<int>> i in Graph.keyValuePairs)
+            {
+				foreach (var v in i.Value)
+                {
+					if (!tGraph.Contains(v))
+                    {
+						tGraph[v] = new List<int>();
 					}
-
-					tGraph[g].Add(i);
-				};
-			};
+					if (!tGraph[v].Contains(i.Key))
+						tGraph[v].Add(i.Key);
+                }
+            }
 
 			return tGraph;
         }
@@ -234,7 +254,7 @@ namespace Symbol
 		public List<int> TopologySort()
         {
 			bool[] used = new bool[_numberOfCells];
-			List<int> order = new List<int>(_numberOfCells);
+			List<int> order = new List<int>();
 
 
 			Action<int> depthFirstSearch = null;
@@ -243,54 +263,97 @@ namespace Symbol
 			{
 
 				Stack<int> stack = new Stack<int>();
-
 				stack.Push(start);
 
-				while (stack.Count != 0)
+				while(stack.Count != 0)
                 {
-					int v = stack.Pop();
-					used[v] = true;
-					if (Graph[v] != null)
-					{
-						for (int i = 0; i < Graph[v].Count; ++i)
-						{
-							int g = Graph[v][i];
-							if (!used[g])
-							{
-								stack.Push(Graph[v][i]);
-								used[Graph[v][i]] = true;
-							}
-						}
-					}
-					order.Add(v);					
+					var v = stack.Pop();
                 }
 
-				//used[v] = true;
-				//for (int i = 0; i < Graph[v].Count; ++i)
-				//{ 
-				//	int to = Graph[v][i];
-				//	if (!used[to])
-				//		depthFirstSearch(to);
+    //            Stack<int> stack = new Stack<int>();
+				//Stack<int> actions = new Stack<int>();
+    //            stack.Push(start);
+				//while (stack.Count != 0)
+    //            {
+    //                int v = stack.Pop();
+    //                used[v] = true;
+
+    //                if (Graph[v] != null)
+    //                {
+    //                    for (int i = 0; i < Graph[v].Count; ++i)
+    //                    {
+    //                        int g = Graph[v][i];
+    //                        if (!used[g])
+    //                        {
+    //                            stack.Push(g);
+    //                            used[g] = true;
+								
+				//			}
+    //                    }
+    //                }
+
+				//	actions.Push(v);
 				//}
-				//ans.Add(v);
-			};
+
+
+				//foreach (var a in actions)
+    //            {
+				//	order.Add(a);
+    //            }
+                //            used[start] = true;
+                //if (Graph[start] != null)
+                //            for (int i = 0; i < Graph[start].Count; ++i)
+                //            {
+                //                int to = Graph[start][i];
+                //                if (!used[to])
+                //                    depthFirstSearch(to);
+                //            }
+                //            order.Add(start);
+            };
 
 
 			Action topologicalSort = null;
 			topologicalSort = () =>
 			{
 				Parallel.For(0, _numberOfCells, (i, state) => { used[i] = false; });
-					
+
+				Stack<int> dfs = new Stack<int>();
 
 				order.Clear();
 
-				for(int i = 0; i < _numberOfCells; ++i)
+				foreach(KeyValuePair<int, List<int>> i in Graph.keyValuePairs)
 				{
-					if (!used[i])
-						depthFirstSearch(i);
+					//if (!used[i.Key])
+					//	depthFirstSearch(i.Key);
+					if (!used[i.Key])
+                    {
+						dfs.Push(i.Key);
+                    }
+
+					while(dfs.Count != 0)
+                    {
+						var v = dfs.Pop();
+						if (used[v])
+                        {
+							order.Add(v);
+							continue;
+                        }
+
+						used[v] = true;
+						dfs.Push(v);
+
+						if (Graph[v] != null)
+							for (int j = 0; j < Graph[v].Count; j++)
+                            {
+								int g = Graph[v][j];
+								if (!used[g])
+                                {
+									dfs.Push(g);
+                                }
+                            }
+                    }
+
 				};
-					
-				order.Reverse();
 			};
 
 
@@ -300,54 +363,76 @@ namespace Symbol
 		}
 
 
-		public List<List<int>> FindStrongConnectedComponents ()
+		public List<List<int>> FindStrongConnectedComponents (bool isTopologySort = false)
         {
 			List<int> order = TopologySort();
-			bool[] used = new bool[_numberOfCells];
+            bool[] used = new bool[_numberOfCells];
+            //var used = new List<int>();
 
-			SymbolGraph tGraph = TransposeGraph();
+            SymbolGraph tGraph = TransposeGraph();
 			List<List<int>> components = new List<List<int>>();
 
 			Func<int, List<int>> depthFirstSearch = null;
 
+
+
+
 			depthFirstSearch = start =>
 			{
-				List<int> component = new List<int>();
+				var component = new List<int>();
+				//Action<int> depthFirstSearch1 = null;
+				//depthFirstSearch1 = v =>
+				//{
+				//	used[v] = true;
+				//	component.Add(v);
+
+				//	if (tGraph[v] != null)
+				//		for (int i = 0; i < tGraph[v].Count; ++i)
+				//		{
+				//			int to = tGraph[v][i];
+				//			if (!used[to])
+				//				depthFirstSearch1(to);
+				//		}
+				//};
+
+				//depthFirstSearch1(start);
+
+
 				Stack<int> stack = new Stack<int>();
 
 				stack.Push(start);
 
-				while (stack.Count != 0)
-				{
+				while(stack.Count != 0)
+                {
 					int v = stack.Pop();
 					used[v] = true;
 					component.Add(v);
-					if (tGraph[v] == null) continue;
-					for (int i = 0; i < tGraph[v].Count; ++i)
-					{
-						int g = tGraph[v][i];
-						if (!used[g])
-						{
-							stack.Push(g);
-							used[g] = true;
-						}
-					}
 
-				}
-
+					if (tGraph[v] != null)
+						for (int i = 0; i < tGraph[v].Count; i++)
+                        {
+							int g = tGraph[v][i];
+							if (!used[g])
+                            {
+								stack.Push(g);
+								used[g] = true;
+                            }
+                        }
+                }
 				return component;
 			};
-			Parallel.For(0, _numberOfCells, (i, state) => { used[i] = false; });
+			
+			//Parallel.For(0, _numberOfCells, (i, state) => { used[i] = false; });
 
-			for (int i = 0; i < _numberOfCells; ++i)
+			for (int i = 0; i < order.Count; ++i)
 			{
-				int v = order[i];
+				int v = order[order.Count - 1 - i];
 
-				if (tGraph.Contains(v) && !used[v])
+				if (!used[v] && (tGraph.Contains(v) || isTopologySort) )
 				{
 					List<int> component = depthFirstSearch(v);
 
-					if (component.Count > 1)
+					if (component.Count > 1 || isTopologySort)
 					{
 						components.Add(component);
 					}
@@ -432,45 +517,48 @@ namespace Symbol
 
 				foreach (var component in components)
 				{
-					//Parallel.ForEach(component, (c) =>
-					foreach(var c in component)
-				   {
+					Parallel.ForEach(component, (c) =>
+					//foreach(var c in component)
+					{
 					   int[] cells = NewCoords(c, oldCols);
 
-						for (int m = 0; m < 4; m++)
+					   for (int m = 0; m < 4; m++)
 					   {
 						   double x, y;
 						   ReturnInterval(cells[m], out x, out y);
 
-						   for (int l = 0; l < _cast; l++)
+						   for (int l = 0; l < _cast_square - 1; l++)
 						   //Parallel.For(0, _cast, (l, state) =>
-						  {
-							  double xn = x + (double)l * _delta / (double)_cast;
-							  double yn = y - (double)l * _delta / (double)_cast;
+						   {
+								for (int d = 0; d < _cast_square - 1; d++)
+								{
+									double xn = x + (double)l * _delta / (double)_cast_square;
+									double yn = y - (double)d * _delta / (double)_cast_square;
 
 
-							  int cell = ReturnCell(xn, yn);
+									int cell = ReturnCell(xn, yn);
 
-							  if (cell == -1) continue;
-							  if (cell >= _numberOfCells) continue;
+									if (cell == -1) continue;
+									if (cell >= _numberOfCells) continue;
 
-							  if (!graph.Contains(cells[m]))
-							  {
-								  graph[cells[m]] = new List<int>();
-							  }
+									if (!graph.Contains(cells[m]))
+									{
+										graph[cells[m]] = new List<int>();
+									}
 
-							  if (graph[cells[m]] != null && !graph[cells[m]].Contains(cell))
-							  {
-								  graph[cells[m]].Add(cell);
-							  }
+									if (graph[cells[m]] != null && !graph[cells[m]].Contains(cell))
+									{
+										graph[cells[m]].Add(cell);
+									}
+								}
 
-						  }
+						   }
 
 
 					   }
 
 
-				   }
+				   });
 					_graph = graph;
 
 					

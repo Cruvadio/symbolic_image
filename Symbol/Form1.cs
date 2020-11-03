@@ -19,6 +19,7 @@ namespace Symbol
         TopologySort,
         FindComponents,
         SetLocalization,
+        DrawAttractor,
     }
 
     public partial class Form1 : Form
@@ -130,10 +131,10 @@ namespace Symbol
             }
             else
             {
-                if (selectedAction == Actions.SetLocalization)
+                if (selectedAction == Actions.SetLocalization || selectedAction == Actions.DrawAttractor)
                 {
                     var n = Int32.Parse(textBoxIterationNumber.Text);
-                    Form2 form = new Form2(symbol, width, height, n);
+                    Form2 form = new Form2(symbol, width, height, n, selectedAction);
                     form.Show();
                 }
                 else

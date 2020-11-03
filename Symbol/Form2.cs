@@ -8,46 +8,39 @@ namespace Symbol
 {
     public partial class Form2 : Form
     {
-        Pen blackPen = new Pen(Color.Black, 1);
 
         OpenGL gl;
-
-
-
         bool isDrawed = false;
-        Point yCoordUp;
-        Point yCoordDown;
-        Point xCoordLeft;
-        Point xCoordRight;
 
-        int width;
-        int height;
-
+        Actions selectedAction;
 
         Symbol symbol;
         List<List<int>> strongComponents;
 
 
-        public Form2(Symbol symbol, int width, int height, int n)
+        public Form2(Symbol symbol, int width, int height, int n, Actions action)
         {
             InitializeComponent();
             this.symbol = symbol;
             this.Width = width;
             this.Height = height;
 
-            xCoordLeft = new Point(0, height/2);
-            xCoordRight = new Point(width, height/2);
-            yCoordDown = new Point(width/2, 0);
-            yCoordUp = new Point(width/2, height);
-
+            selectedAction = action;
             symbol.MakeGraph();
 
-            strongComponents = symbol.FindStrongConnectedComponents();
-            if (n > 0)
+
+            if (action == Actions.SetLocalization)
             {
-                strongComponents = symbol.MakeNewGraph(n, strongComponents);
+                strongComponents = symbol.FindStrongConnectedComponents();
+                if (n > 0)
+                {
+                    strongComponents = symbol.MakeNewGraph(n, strongComponents);
+                }
             }
-                
+            else if (action == Actions.DrawAttractor)
+            {
+                strongComponents = symbol.FindStrongConnectedComponents(true);
+            }
             gl = this.openGLControl1.OpenGL;
 
 
@@ -113,6 +106,26 @@ namespace Symbol
             }
         }
 
+        void DrawAttractor ()
+        {
+            for (int i = 0; i < strongComponents.Count; i++)
+            {
+                if (strongComponents[i].Count > 1)
+                {
+                    gl.Color(0f, 1f, 0f);
+                    foreach(var v in strongComponents[i])
+                    {
+                        DrawSquare(v);
+                    }
+                }
+                else
+                {
+                    gl.Color(1f, 0f, 0f);
+                    DrawSquare(strongComponents[i][0]);
+                }
+            }
+        }
+
         private void openGLControl1_OpenGLDraw(object sender, SharpGL.RenderEventArgs args)
         {
             if (!isDrawed)
@@ -127,7 +140,10 @@ namespace Symbol
 
 
                 DrawGrid();
-                DrawComponents();
+                if (selectedAction == Actions.SetLocalization)
+                    DrawComponents();
+                else if (selectedAction == Actions.DrawAttractor)
+                    DrawAttractor();
 
                 isDrawed = true;
             }

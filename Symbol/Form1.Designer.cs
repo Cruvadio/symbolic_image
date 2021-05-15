@@ -60,8 +60,10 @@
             this.textBoxHeight = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
-            this.textBoxIterationNumber = new System.Windows.Forms.TextBox();
+            this.textBoxIterationLocalizationNumber = new System.Windows.Forms.TextBox();
             this.label14 = new System.Windows.Forms.Label();
+            this.textBoxIterationBalanceNumber = new System.Windows.Forms.TextBox();
+            this.label15 = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -114,7 +116,8 @@
             "Выполнить топологическую сортировку",
             "Найти компоненты сильной связности",
             "Локализация цепно-реккурентного множества",
-            "Построение аттрактора динамической системы"});
+            "Построение аттрактора динамической системы",
+            "Построение инвариантных мер методом балансировки"});
             this.cmbBoxActions.Location = new System.Drawing.Point(264, 37);
             this.cmbBoxActions.Name = "cmbBoxActions";
             this.cmbBoxActions.Size = new System.Drawing.Size(307, 21);
@@ -122,7 +125,7 @@
             // 
             // btnSubmit
             // 
-            this.btnSubmit.Location = new System.Drawing.Point(130, 185);
+            this.btnSubmit.Location = new System.Drawing.Point(130, 221);
             this.btnSubmit.Name = "btnSubmit";
             this.btnSubmit.Size = new System.Drawing.Size(307, 23);
             this.btnSubmit.TabIndex = 6;
@@ -236,11 +239,11 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(515, 76);
+            this.label10.Location = new System.Drawing.Point(494, 77);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(56, 13);
+            this.label10.Size = new System.Drawing.Size(84, 13);
             this.label10.TabIndex = 20;
-            this.label10.Text = "Интервал";
+            this.label10.Text = "Размер ячейки";
             this.label10.Click += new System.EventHandler(this.label10_Click);
             // 
             // menuStrip1
@@ -287,7 +290,7 @@
             // lblTime
             // 
             this.lblTime.AutoSize = true;
-            this.lblTime.Location = new System.Drawing.Point(15, 207);
+            this.lblTime.Location = new System.Drawing.Point(12, 246);
             this.lblTime.Name = "lblTime";
             this.lblTime.Size = new System.Drawing.Size(0, 13);
             this.lblTime.TabIndex = 24;
@@ -295,7 +298,7 @@
             // chkBoxShowOutput
             // 
             this.chkBoxShowOutput.AutoSize = true;
-            this.chkBoxShowOutput.Location = new System.Drawing.Point(461, 189);
+            this.chkBoxShowOutput.Location = new System.Drawing.Point(468, 225);
             this.chkBoxShowOutput.Name = "chkBoxShowOutput";
             this.chkBoxShowOutput.Size = new System.Drawing.Size(110, 17);
             this.chkBoxShowOutput.TabIndex = 25;
@@ -334,29 +337,49 @@
             this.label13.TabIndex = 29;
             this.label13.Text = "Высота:";
             // 
-            // textBoxIterationNumber
+            // textBoxIterationLocalizationNumber
             // 
-            this.textBoxIterationNumber.Location = new System.Drawing.Point(155, 159);
-            this.textBoxIterationNumber.Name = "textBoxIterationNumber";
-            this.textBoxIterationNumber.Size = new System.Drawing.Size(33, 20);
-            this.textBoxIterationNumber.TabIndex = 30;
+            this.textBoxIterationLocalizationNumber.Location = new System.Drawing.Point(155, 159);
+            this.textBoxIterationLocalizationNumber.Name = "textBoxIterationLocalizationNumber";
+            this.textBoxIterationLocalizationNumber.Size = new System.Drawing.Size(33, 20);
+            this.textBoxIterationLocalizationNumber.TabIndex = 30;
             // 
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(30, 162);
+            this.label14.Location = new System.Drawing.Point(9, 149);
+            this.label14.MaximumSize = new System.Drawing.Size(150, 0);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(119, 13);
+            this.label14.Size = new System.Drawing.Size(140, 26);
             this.label14.TabIndex = 31;
-            this.label14.Text = "Количество итераций:";
+            this.label14.Text = "Количество итераций для локализации:";
+            // 
+            // textBoxIterationBalanceNumber
+            // 
+            this.textBoxIterationBalanceNumber.Location = new System.Drawing.Point(155, 195);
+            this.textBoxIterationBalanceNumber.Name = "textBoxIterationBalanceNumber";
+            this.textBoxIterationBalanceNumber.Size = new System.Drawing.Size(33, 20);
+            this.textBoxIterationBalanceNumber.TabIndex = 32;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(9, 189);
+            this.label15.MaximumSize = new System.Drawing.Size(150, 0);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(140, 26);
+            this.label15.TabIndex = 33;
+            this.label15.Text = "Количество итераций для метода балансировки:";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(590, 232);
+            this.ClientSize = new System.Drawing.Size(590, 268);
+            this.Controls.Add(this.label15);
+            this.Controls.Add(this.textBoxIterationBalanceNumber);
             this.Controls.Add(this.label14);
-            this.Controls.Add(this.textBoxIterationNumber);
+            this.Controls.Add(this.textBoxIterationLocalizationNumber);
             this.Controls.Add(this.label13);
             this.Controls.Add(this.label12);
             this.Controls.Add(this.textBoxHeight);
@@ -432,8 +455,10 @@
         private System.Windows.Forms.TextBox textBoxHeight;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.TextBox textBoxIterationNumber;
+        private System.Windows.Forms.TextBox textBoxIterationLocalizationNumber;
         private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.TextBox textBoxIterationBalanceNumber;
+        private System.Windows.Forms.Label label15;
     }
 }
 

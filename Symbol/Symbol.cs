@@ -31,6 +31,8 @@ namespace Symbol
 		private int _cast_square;
 
 
+		private double[] p;
+
 		private int _cast;
 
 		private double _a;
@@ -105,18 +107,36 @@ namespace Symbol
 			_numberOfCells = _rows * _cols;
 			_graph = new SymbolGraph(_numberOfCells);
 
+			p = new double[_numberOfCells];
+
+			for (int i = 0; i < _numberOfCells; i++)
+            {
+				p[i] = 0;
+            }
 
 			_cast_square = (int)Math.Ceiling(Math.Sqrt((double)_cast));
 		}
 
+
+		private double xFunc (double x)
+        {
+			double n = 1.0;
+			return x * Math.Pow(2 - x * x, 1.0 / (2.0 + n));
+        }
+
+
 		private int ReturnCell(double x, double y)
         {
 
-			double xn = xFunction(x, y, _a, _b);
-			double yn = yFunction(x, y, _a, _b);
+            double xn = xFunction(x, y, _a, _b);
+            double yn = yFunction(x, y, _a, _b);
 
 
-			if (xn <= _xMin || xn >= _xMax || yn <= _yMin || yn >= _yMax)
+            //double xn = xFunc(x);
+            //double yn = 0.5 * y;
+
+
+            if (xn <= _xMin || xn >= _xMax || yn <= _yMin || yn >= _yMax)
 				return -1;
 
 			return (int)Math.Abs(((double)(yn - _yMax)/_delta)) * _cols + (int)Math.Abs( ((double)(xn - _xMin)/_delta));
@@ -166,6 +186,8 @@ namespace Symbol
 			if (xFunction == null || yFunction == null)
 				return;
 
+
+			double d = _delta / (double)(_cast_square);
 			//for(int i = 0; i < _numberOfCells; i++)
 			Parallel.For(0, _numberOfCells, (i, state) =>
 			{
@@ -176,14 +198,17 @@ namespace Symbol
 
 
 
-				for (int k = 0; k <= _cast_square - 1; k++)
-				{
+                for (int k = 0; k <= _cast_square - 1; k++)
+                //for (int k = 0; k <= _cast; k++)
+                {
+					double x = x1 + (double)k * d;
 					for (int t = 0; t <= _cast_square - 1; t++)
-					{
-						double x = x1 + (double)k * _delta / (double)_cast_square;
-						double y = y1 - (double)t * _delta / (double)_cast_square;
+                    {
+                        double y = y1 - (double)t * d;
+                        //double x = x1 + (double)k * _delta / (double)_cast;
+                        //double y = y1 - (double)k * _delta / (double)_cast;
 
-						int cell = ReturnCell(x, y);
+                        int cell = ReturnCell(x, y);
 
 						if (cell == -1) continue;
 						if (cell >= _numberOfCells) continue;
@@ -284,9 +309,10 @@ namespace Symbol
                             for (int j = Graph[v].Count - 1; j >= 0; j--)
                             {
                                 int g = Graph[v][j];
-                                if (color[g] == 0)
+                                if (color[g] == 0 && Graph.Contains(g))
                                 {
                                     dfs.Push(g);
+									
                                 }
                             }
                     }
@@ -337,7 +363,13 @@ namespace Symbol
 							if (!used[g])
                             {
 								stack.Push(g);
-                            }
+							}
+
+							//if (v == g)
+							//{
+
+							//	component.Add(v);
+							//}
                         }
                 }
 				return component;
@@ -361,6 +393,115 @@ namespace Symbol
 			return components;
 		}
 
+
+		public double[] BalanceMethod (List<List<int>> components, int n)
+        {
+
+			List<int> component = FindMaxComponent(components);
+
+			
+
+			foreach( var v in component)
+            {
+				p[v] = 1.0;
+            }
+			var p0 = new double[_numberOfCells];
+
+
+			p.CopyTo(p0, 0);
+			for (int i = 0; i < n; i++)
+            {
+
+
+				double sum = 0.0;
+				for (int c = 0; c < _numberOfCells; ++c)
+				{
+					sum += p[c];
+				}
+
+				for (int c = 0; c < _numberOfCells; ++c)
+				{
+					p[c] = p[c] / sum;
+				}
+
+
+				//Parallel.For(0, _rows, j =>
+				for (int j = 0; j < _rows; j++)
+                {
+                    double sum_l = 0;
+                    double sum_h = 0;
+
+                    for (int m = 0; m < _rows; m++)
+                    {
+                        if (m != j)
+                        {
+                            sum_h += p[m * _cols + j];
+							sum_l += p[j * _cols + m];
+
+						}
+                    }
+
+
+                    for (int k = 0; k < _cols; k++)
+                    {
+                        if (k != j && sum_l > 0 && sum_h >= 0 && sum_h > sum_l)
+                        {
+                            p0[j * _cols + k] = p[j * _cols + k] * (Math.Sqrt(sum_h / sum_l));
+                        }
+                        else
+                            p0[j * _cols + k] = p[j * _cols + k];
+
+
+                    }
+                }
+
+                p0.CopyTo(p, 0);
+
+
+				//Parallel.For(0, _cols, j =>
+				for (int j = 0; j < _cols; j++)
+				{
+                    double sum_l = 0;
+                    double sum_h = 0;
+
+                    for (int m = 0; m < _rows; m++)
+                    {
+                        if (m != j)
+                        {
+                            sum_l += p[m * _cols + j];
+                            sum_h += p[j * _cols + m];
+                        }
+                    }
+
+                    for (int k = 0; k < _cols; k++)
+                    {
+                        if (k != j && sum_l > 0 && sum_h >= 0 && sum_h > sum_l)
+                        {
+                                p0[k * _cols + j] = p[k * _cols + j] * (Math.Sqrt(sum_h / sum_l));
+                        }
+                        else
+                            p0[k * _cols + j] = p[k * _cols + j];
+
+
+                    }
+                }
+
+                p0.CopyTo(p, 0);
+
+
+
+			}
+
+
+			//for (int i = 0; i < _numberOfCells; i++)
+			//{
+			//	p[i] /= _delta * _delta;
+			//	if (p[i] == 40000)
+			//		continue;
+			//}
+
+			return p;
+        }
 
 
 
@@ -443,63 +584,55 @@ namespace Symbol
 				_delta *= 0.5;
 				_rows *= 2;
 				SymbolGraph graph = new SymbolGraph(_numberOfCells);
+				List<int> component = FindMaxComponent(components);
 
-				foreach (var component in components)
+				int size = component.Count;
+				Parallel.ForEach(component, (c) =>
+				//foreach(var c in component)
 				{
-					Parallel.ForEach(component, (c) =>
-					//foreach(var c in component)
+					int[] cells = NewCoords(c, oldCols);
+
+					for (int m = 0; m < 4; m++)
 					{
-					   int[] cells = NewCoords(c, oldCols);
+						double x, y;
+						ReturnInterval(cells[m], out x, out y);
 
-					   for (int m = 0; m < 4; m++)
-					   {
-						   double x, y;
-						   ReturnInterval(cells[m], out x, out y);
+						for (int l = 0; l < _cast_square - 1; l++)
+						//Parallel.For(0, _cast, (l, state) =>
+						{
+							for (int d = 0; d < _cast_square - 1; d++)
+							{
+								double xn = x + (double)l * _delta / (double)_cast_square;
+								double yn = y - (double)d * _delta / (double)_cast_square;
 
-						   for (int l = 0; l < _cast_square - 1; l++)
-						   //Parallel.For(0, _cast, (l, state) =>
-						   {
-								for (int d = 0; d < _cast_square - 1; d++)
+
+								int cell = ReturnCell(xn, yn);
+
+								if (cell == -1) continue;
+								if (cell >= _numberOfCells) continue;
+
+								int oldCell = OldCoordSystem(cell, oldCols);
+
+								if (!Graph.Contains(oldCell)) continue;
+
+								if (!graph.Contains(cells[m]))
 								{
-									double xn = x + (double)l * _delta / (double)_cast_square;
-									double yn = y - (double)d * _delta / (double)_cast_square;
-
-
-									int cell = ReturnCell(xn, yn);
-
-									if (cell == -1) continue;
-									if (cell >= _numberOfCells) continue;
-
-									int oldCell = OldCoordSystem(cell, oldCols);
-
-									if (!Graph.Contains(oldCell)) continue;
-
-									if (!graph.Contains(cells[m]))
-									{
-										graph[cells[m]] = new List<int>();
-									}
-
-									if (graph[cells[m]] != null && !graph[cells[m]].Contains(cell))
-									{
-										graph[cells[m]].Add(cell);
-									}
+									graph[cells[m]] = new List<int>();
 								}
 
-						   }
-
-
-					   }
-
-
-				   });
+								if (graph[cells[m]] != null && !graph[cells[m]].Contains(cell))
+								{
+									graph[cells[m]].Add(cell);
+								}
+							}
+						}
+					}
+				});
 					_graph = graph;
 
-					
-
-				};
 				components = FindStrongConnectedComponents();
 				oldCols = _cols;
-
+				p = new double[_numberOfCells];
 			}
 
 			return components;

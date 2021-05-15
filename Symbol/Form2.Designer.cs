@@ -53,7 +53,7 @@
             this.ClientSize = new System.Drawing.Size(784, 761);
             this.Controls.Add(this.openGLControl1);
             this.Name = "Form2";
-            this.Text = "Form2";
+            this.Text = "Визуализация";
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form2_Paint);
             ((System.ComponentModel.ISupportInitialize)(this.openGLControl1)).EndInit();
             this.ResumeLayout(false);

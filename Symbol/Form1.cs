@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+
 
 namespace Symbol
 {
@@ -20,6 +22,7 @@ namespace Symbol
         FindComponents,
         SetLocalization,
         DrawAttractor,
+        BalanceMethod,
     }
 
     public partial class Form1 : Form
@@ -49,7 +52,8 @@ namespace Symbol
                     textBoxWidth.Text = ReadLineFromCache(sr);
                     textBoxHeight.Text = ReadLineFromCache(sr);
 
-                    textBoxIterationNumber.Text = ReadLineFromCache(sr);
+                    textBoxIterationLocalizationNumber.Text = ReadLineFromCache(sr);
+                    textBoxIterationBalanceNumber.Text = ReadLineFromCache(sr);
                 }
             }
             catch (Exception e)
@@ -121,7 +125,7 @@ namespace Symbol
                     symbol.FindStrongConnectedComponents();
                 if (selectedAction == Actions.SetLocalization)
                 {
-                    var n = Int32.Parse(textBoxIterationNumber.Text);
+                    var n = Int32.Parse(textBoxIterationLocalizationNumber.Text);
                     symbol.MakeNewGraph(n, symbol.FindStrongConnectedComponents());
                 }
 
@@ -131,11 +135,38 @@ namespace Symbol
             }
             else
             {
-                if (selectedAction == Actions.SetLocalization || selectedAction == Actions.DrawAttractor)
+                if (selectedAction == Actions.SetLocalization ||
+                    selectedAction == Actions.DrawAttractor)
                 {
-                    var n = Int32.Parse(textBoxIterationNumber.Text);
+                    var n = Int32.Parse(textBoxIterationLocalizationNumber.Text);
                     Form2 form = new Form2(symbol, width, height, n, selectedAction);
                     form.Show();
+                }
+                else if (selectedAction == Actions.BalanceMethod)
+                {
+                    var n_loc = Int32.Parse(textBoxIterationLocalizationNumber.Text);
+                    var n_bal = Int32.Parse(textBoxIterationBalanceNumber.Text);
+
+
+
+                    symbol.MakeGraph();
+                    List<List<int>> components = symbol.MakeNewGraph(n_loc, symbol.FindStrongConnectedComponents());
+                    DateTime time = DateTime.Now;
+                    //components = symbol.MakeNewGraph(2, components);
+                    double[] p = symbol.BalanceMethod(components, n_bal);
+
+                    var endTime = DateTime.Now - time;
+                    lblTime.Text = "Program worked " + endTime.TotalMilliseconds.ToString() + " miliseconds.";
+                    using (StreamWriter sw = new StreamWriter("balance.txt", false))
+                    {
+                        foreach (var v in components[0])
+                        {
+                            var row = symbol.ReturnRow(v);
+                            var col = symbol.ReturnCol(v);
+
+                            sw.Write(row.ToString() + " " + col.ToString() + " " + p[v].ToString("G", CultureInfo.InvariantCulture) + "\n");
+                        }
+                    }
                 }
                 else
                 {
@@ -168,6 +199,8 @@ namespace Symbol
                 WriteCache(sw, textBoxCast.Text);
                 WriteCache(sw, textBoxWidth.Text);
                 WriteCache(sw, textBoxHeight.Text);
+                WriteCache(sw, textBoxIterationLocalizationNumber.Text);
+                WriteCache(sw, textBoxIterationBalanceNumber.Text);
             }
         }
 

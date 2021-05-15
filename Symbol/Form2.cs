@@ -16,6 +16,7 @@ namespace Symbol
 
         Symbol symbol;
         List<List<int>> strongComponents;
+        double[] p;
 
 
         public Form2(Symbol symbol, int width, int height, int n, Actions action)
@@ -41,9 +42,15 @@ namespace Symbol
             {
                 strongComponents = symbol.FindStrongConnectedComponents(true);
             }
+            else if (action == Actions.BalanceMethod)
+            {
+                strongComponents = symbol.FindStrongConnectedComponents(false);
+
+                p = symbol.BalanceMethod(strongComponents, n);
+            }
             gl = this.openGLControl1.OpenGL;
 
-
+            gl.MatrixMode(OpenGL.GL_PROJECTION);
 
         }
 
@@ -72,6 +79,8 @@ namespace Symbol
 
             // gl.Rect(-1, 1, 1, -1);
         }
+
+
 
 
 
@@ -126,6 +135,87 @@ namespace Symbol
             }
         }
 
+        void DrawCyllinder (double x, double y, double height, double s)
+        {
+
+            //gl.Color(0.1f, 0.8f, 0.1f);
+            //gl.Begin(OpenGL.GL_POLYGON);
+
+            //gl.Vertex(x, y, 0);
+            //gl.Vertex(x, y, height);
+            //gl.Vertex(x, y + s, height);
+            //gl.Vertex(x, y + s, 0);
+
+            //gl.End();
+
+            //gl.Begin(OpenGL.GL_POLYGON);
+
+            //gl.Vertex(x, y + s, 0);
+            //gl.Vertex(x, y + s, height);
+            //gl.Vertex(x + s, y + s, height);
+            //gl.Vertex(x + s, y + s, 0);
+
+            //gl.End();
+
+            //gl.Begin(OpenGL.GL_POLYGON);
+
+            //gl.Vertex(x + s, y + s, 0);
+            //gl.Vertex(x + s, y + s, height);
+            //gl.Vertex(x + s, y, height);
+            //gl.Vertex(x + s, y, 0);
+
+            //gl.End();
+
+
+            //gl.Begin(OpenGL.GL_POLYGON);
+
+            //gl.Vertex(x + s, y + s, 0);
+            //gl.Vertex(x + s, y + s, height);
+            //gl.Vertex(x, y, height);
+            //gl.Vertex(x, y, 0);
+
+            //gl.End();
+
+            gl.Color(0.8f, 0.1f, 0.1f);
+            gl.Begin(OpenGL.GL_POLYGON);
+
+            gl.Vertex(x, y, 0);
+            gl.Vertex(x, y + s, 0);
+            gl.Vertex(x + s, y + s, 0);
+            gl.Vertex(x + s, y, 0);
+
+            gl.End();
+
+            gl.Color(0.1f, 0.1f, 0.8f);
+            gl.Begin(OpenGL.GL_POLYGON);
+
+            gl.Vertex(x, y, height);
+            gl.Vertex(x, y + s, height);
+            gl.Vertex(x + s, y + s, height);
+            gl.Vertex(x + s, y, height);
+
+            gl.End();
+        }
+
+        void DrawMeasures ()
+        {
+            gl.MatrixMode(OpenGL.GL_MODELVIEW);
+            gl.LoadIdentity();
+            gl.Rotate(-45.0f, 1.0f, 0.0f, 0.0f);
+            gl.Rotate(45.0f, 0.0f, 0.0f, 1.0f);
+            //gl.Translate(0.0f, 0.0f, -1.5f);
+            foreach (var v in strongComponents[0])
+            {
+                int row = symbol.ReturnRow(v);
+                int col = symbol.ReturnCol(v);
+
+                double x = 2 * ((double)col / (double)symbol.Cols) - 1;
+                double y = -2 * ((double)row / (double)symbol.Rows) + 1;
+                
+                DrawCyllinder(x, y, p[v], 0.005);
+            }
+        }
+
         private void openGLControl1_OpenGLDraw(object sender, SharpGL.RenderEventArgs args)
         {
             if (!isDrawed)
@@ -135,7 +225,7 @@ namespace Symbol
                 gl.LoadIdentity();
 
 
-                gl.Translate(0, 0, -2.25f);
+                //gl.Translate(0, 0, -2.25f);
 
 
 
@@ -144,6 +234,8 @@ namespace Symbol
                     DrawComponents();
                 else if (selectedAction == Actions.DrawAttractor)
                     DrawAttractor();
+                else if (selectedAction == Actions.BalanceMethod)
+                    DrawMeasures();
 
                 isDrawed = true;
             }
